@@ -1,0 +1,30 @@
+{
+  "name": "api.gratr.dev",
+  "version": "0.1.0",
+  "description": "The API driving GRatr, the best tool to rate, review and select GitHub repositories.",
+  "scripts": {
+    "buildSchemas": "npx @redocly/openapi-cli lint docs/rest.yml; yq eval -o=j docs/rest.yml > src/rest.json;"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.16.5",
+    "@redocly/openapi-cli": "^1.0.0-beta.73",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1"
+  },
+  "keywords": [
+    "gratr",
+    "github",
+    "rate",
+    "ratings",
+    "review",
+    "repository",
+    "dx",
+    "developer experience"
+  ],
+  "author": "Troy Forster",
+  "license": "MIT"
+}

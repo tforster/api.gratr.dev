@@ -1,0 +1,151 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "description": "Dev",
+      "url": "http://localhost:3000/dev"
+    },
+    {
+      "description": "Sandbox",
+      "url": "https://api.sand.gratr.dev"
+    },
+    {
+      "description": "Staging",
+      "url": "https://api.stage.gratr.dev"
+    },
+    {
+      "description": "Production",
+      "url": "https://api.gratr.dev"
+    }
+  ],
+  "info": {
+    "description": "The API driving GRatr, the best tool to rate, review and select GitHub repositories.",
+    "version": "0.1.0",
+    "title": "GRatr REST API",
+    "contact": {
+      "email": "troy.forster@gmail.com",
+      "name": "Troy Forster",
+      "url": "https://www.tforster.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://www.gratr.dev/license"
+    }
+  },
+  "tags": [
+    {
+      "name": "user",
+      "description": "Operations for managing users"
+    },
+    {
+      "name": "subscriptions",
+      "description": "Operations specific to teachers for managing subscriptions"
+    },
+    {
+      "name": "webhooks",
+      "description": "Operations implementing incoming webhooks"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "operationId": "readUsers",
+        "summary": "Returns a list of users.",
+        "description": "Optional extended description in CommonMark or HTML.",
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/NoContent"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadInputError"
+          }
+        }
+      }
+    },
+    "/{organisation}/{repository}": {
+      "get": {
+        "operationId": "readRepository",
+        "summary": "Reads the repository",
+        "description": "Reads the repository (description)\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organisation",
+            "description": "The GitHub organisation name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/organisationName"
+            }
+          },
+          {
+            "in": "path",
+            "name": "repository",
+            "description": "The GitHub repository name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/repositoryName"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "stripeWebhook": {
+        "type": "apiKey",
+        "name": "stripe-signature",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "organisationName": {
+        "description": "The name of the GitHub organisation",
+        "type": "string",
+        "example": "tforster"
+      },
+      "repositoryName": {
+        "description": "The name of the GitHub repository",
+        "type": "string",
+        "example": "joy"
+      }
+    },
+    "responses": {
+      "Created": {
+        "description": "Createdx"
+      },
+      "NoContent": {
+        "description": "No content"
+      },
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
+      },
+      "BadInputError": {
+        "description": "Bad input parameter"
+      },
+      "NotFoundError": {
+        "description": "Resource was not found"
+      },
+      "DuplicateError": {
+        "description": "Resource already exists"
+      }
+    }
+  }
+}
