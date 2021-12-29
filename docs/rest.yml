@@ -31,18 +31,24 @@ tags:
     description: Operations specific to teachers for managing subscriptions
 
 paths:
-  /auth/signin:
+  /auth/tokens:
     post:
       tags:
         - auth
-      operationId: signin
-      summary: Sign in
-      description: Sign in
+      operationId: tokens
+      summary: Sign in with GitHub
+      description: |
+        Uses GitHub oAuth2 Authorisation Code Grant flow to exchange a GitHub access_token for a GRatr JWT and refresh token.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tokensPostRequest"
       responses:
-        "204":
-          $ref: "#/components/responses/NoContent"
+        "200":
+          $ref: "#/components/responses/tokensPost"
         "400":
-          $ref: "#/components/responses/BadInputError"
+          $ref: "#/components/responses/Error"
 
   /auth/refreshtoken:
     post:
@@ -55,7 +61,7 @@ paths:
         "204":
           $ref: "#/components/responses/NoContent"
         "400":
-          $ref: "#/components/responses/BadInputError"
+          $ref: "#/components/responses/Error"
 
   /users:
     get:
@@ -66,7 +72,8 @@ paths:
         "204":
           $ref: "#/components/responses/NoContent"
         "400":
-          $ref: "#/components/responses/BadInputError"
+          $ref: "#/components/responses/Error"
+
   /{organisation}/{repository}:
     get:
       operationId: readRepository
@@ -102,24 +109,71 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ## Requests
+
+    tokensPostRequest:
+      type: object
+      properties:
+        access_token:
+          $ref: "#/components/schemas/gitHubAccessToken"
+      additionalProperties: false
+
+    ## Attributes
+
+    gitHubAccessToken:
+      description: A token returned from a successful GitHub oAuth2 Authorisation Code Grant flow
+      type: string
+      example: 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
+    jwt:
+      description: JSON Web Token
+      type: object
     organisationName:
       description: The name of the GitHub organisation
       type: string
       example: tforster
+    refreshToken:
+      description: A token that can be exchanged for a JWT without logging in a again
+      type: string
+      example: tbd
+
     repositoryName:
       description: The name of the GitHub repository
       type: string
       example: joy
 
   responses:
+    tokensPost:
+      description: Success. JWT and refreshToken created.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jwt:
+                $ref: "#/components/schemas/jwt"
+              refreshToken:
+                $ref: "#/components/schemas/refreshToken"
+            additionalProperties: false
     Created:
       description: Createdx
     NoContent:
       description: No content
     UnauthorizedError:
       description: Access token is missing or invalid
-    BadInputError:
-      description: Bad input parameter
+
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              details:
+                type: string
+            additionalProperties: false
+
     NotFoundError:
       description: Resource was not found
     DuplicateError:
