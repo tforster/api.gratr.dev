@@ -5,7 +5,10 @@ _A constantly evolving guide to developing api.gratr.dev. It captures the curren
 ## Table of Contents <!-- omit in toc -->
 
 - [About](#about)
-- [Authy stuff](#authy-stuff)
+- [Authy Stuff](#authy-stuff)
+  - [Authentication with GitHub oAuth2 Authorisation Code Grant](#authentication-with-github-oauth2-authorisation-code-grant)
+  - [Refresh Token Flow](#refresh-token-flow)
+- [Database Stuff](#database-stuff)
 - [Web Client](#web-client)
   - [Templates](#templates)
 
@@ -15,11 +18,53 @@ Instead of capturing the technical architecture to an ADO wiki page as I have do
 
 Please note that this project is implemented across three repositories, one each for the web client, API and the browser extension. However, to maintain a holistic "developer" view of the architecture there will just this one Developer Guide, maintained in the API repo. The other two repos will point to here.
 
-## Authy stuff
+## Authy Stuff
 
 - Exchange GitHub userId for JWT
 - Verify GitHub userId when exchanging
 - Return JWT and refresh tokens
+- I considered Azure [Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/overview) which is Azure's answer to [AWS Cognito](https://aws.amazon.com/cognito/) and while it looks compelling, and the docs and code samples are awesome, it is more than I need.
+
+### Authentication with GitHub oAuth2 Authorisation Code Grant
+
+```mermaid
+sequenceDiagram
+  
+  Participant A as Alice
+  Participant W as GRatr App
+  Participant G as GitHub
+  Participant I as GRatr API
+  
+  A->>W: Click Login link
+  W->>G: Open GitHub login window
+  Note over W, G: GET https://github.com/login/oauth/authorize
+  
+  A->>G: Alice authenticates   
+  G->>W: Callback app with code
+  
+  W->>+I: Extract {code} from URL and exchange for GRatr JWT and refresh tokens
+  Note over W, I: POST https://api.gratr.dev/auth/tokens {code}
+  
+  I->>G: Request GitHub access_token {code} 
+  Note over I, G: POST https://github.com/login/oauth/access_token {code}
+  G->>I: Return access_token
+  
+  I->>G: Request GitHub user details
+  Note over I, G: POST https://api.github.com/user {access_token}
+  G->>I: Return user details
+
+  I->>I: Create/update user
+  I->>I: Create JWT
+  I->>-W: Return JWT (w/GitHub access_token) and refresh tokens  
+```
+
+### Refresh Token Flow
+
+Pending...
+
+## Database Stuff
+
+My key/val experience so far has been with [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) but GRatr will be built with [Azure Cosmos DB using the table API](https://docs.microsoft.com/en-us/azure/cosmos-db/choose-api#table-api) which is functionally similar. The schemaless [schema](https://docs.google.com/spreadsheets/d/1dL2uTcKjE7icbfQq-ESl6cwSHZmy9VeSHuGHF_NsV3M/edit?usp=sharing) is currently written with DynamoDB language but will be evolved into Cosmos speak as I learn more.
 
 ## Web Client
 
@@ -31,6 +76,8 @@ The web client will rely on a simple API (this repo) and a few `fetch()`
 calls to populate search results, and save user ratings and reviews.
 
 The API will also serve JSON data to planned browser extension that will inject GRatr ratings into GitHub and NPM pages.
+
+While JavaScript will be required for handling GitHub authentication and fetching search results, elsewhere its role will be for progressive enhancement. This, in concert with a no-dependency and no-framework approach will require a very small JS footprint. As such, the small single `main.js` file will be present on each page. There will be no need for page-specific JavaScript files since performance will be optimised when the tiny main.js is cached on the first page request.
 
 ### Templates
 
