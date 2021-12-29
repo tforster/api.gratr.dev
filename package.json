@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "The API driving GRatr, the best tool to rate, review and select GitHub repositories.",
   "scripts": {
-    "buildSchemas": "npx @redocly/openapi-cli lint docs/rest.yml; yq eval -o=j docs/rest.yml > src/rest.json;"
+    "buildSchemas": "npx @redocly/openapi-cli lint docs/rest-api/openapi.yaml; npx @redocly/openapi-cli bundle docs/rest-api/openapi.yaml --output src/rest.json",
+    "showDocs": "xdg-open http://127.0.0.1:8080; npx @redocly/openapi-cli preview-docs docs/rest-api/openapi.yaml;"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",

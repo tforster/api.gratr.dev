@@ -1,0 +1,5 @@
+type: string
+description: The description of the aggregate value
+example: >-
+  The median is defined as the number in the middle of a given set of numbers
+  arranged in order of increasing magnitude.

@@ -1,0 +1,3 @@
+description: The name of the GitHub organisation
+type: string
+example: tforster

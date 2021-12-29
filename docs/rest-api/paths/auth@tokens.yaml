@@ -1,0 +1,18 @@
+post:
+  tags:
+    - auth
+  operationId: tokens
+  summary: Sign in with GitHub
+  description: >
+    Uses GitHub oAuth2 Authorisation Code Grant flow to exchange a GitHub
+    access_token for a GRatr JWT and refresh token.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/tokensPostRequest.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/tokensPost.yaml
+    '400':
+      $ref: ../components/responses/Error.yaml

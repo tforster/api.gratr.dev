@@ -1,0 +1,11 @@
+description: Success. JWT and refreshToken created.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        jwt:
+          $ref: ../schemas/jwt.yaml
+        refreshToken:
+          $ref: ../schemas/refreshToken.yaml
+      additionalProperties: false

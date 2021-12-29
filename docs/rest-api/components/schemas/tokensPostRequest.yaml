@@ -1,0 +1,5 @@
+type: object
+properties:
+  access_token:
+    $ref: ./gitHubAccessToken.yaml
+additionalProperties: false

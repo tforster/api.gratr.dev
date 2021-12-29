@@ -1,0 +1,11 @@
+description: Error
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+        details:
+          type: string
+      additionalProperties: false

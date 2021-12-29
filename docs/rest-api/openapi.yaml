@@ -1,0 +1,41 @@
+openapi: 3.0.0
+servers:
+  - description: Dev
+    url: http://localhost:3000/dev
+  - description: Sandbox
+    url: https://api.sand.gratr.devy
+  - description: Staging
+    url: https://api.stage.gratr.dev
+  - description: Production
+    url: https://api.gratr.dev
+info:
+  description: >-
+    The API driving GRatr, the best tool to rate, review and select GitHub
+    repositories.
+  version: 0.1.0
+  title: GRatr REST API
+  contact:
+    email: troy.forster@gmail.com
+    name: Troy Forster
+    url: https://www.tforster.com
+  license:
+    name: MIT
+    url: https://www.gratr.dev/license
+tags:
+  - name: auth
+    description: Authentication and authorisation
+  - name: rating
+    description: Operations related to creating, updating and retrieving repository ratings
+paths:
+  /auth/tokens:
+    $ref: paths/auth@tokens.yaml
+  /auth/refreshtoken:
+    $ref: paths/auth@refreshtoken.yaml
+  /organisations/{organisation}/{repository}:
+    $ref: paths/organisations@{organisation}@{repository}.yaml
+components:
+  securitySchemes:
+    GitHub:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

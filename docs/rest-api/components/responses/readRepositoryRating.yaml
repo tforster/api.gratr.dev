@@ -1,0 +1,22 @@
+description: Success. Ratings returned.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        organisationName:
+          $ref: ../schemas/organisationName.yaml
+        repositoryName:
+          $ref: ../schemas/repositoryName.yaml
+        aggregates:
+          $ref: ../schemas/aggregateObject.yaml
+        ratings:
+          type: array
+          items:
+            type: object
+            properties:
+              username:
+                type: string
+            additionalProperties:
+              $ref: ../schemas/organisationName.yaml
+      additionalProperties: false

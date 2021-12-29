@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "servers": [
     {
       "description": "Dev",
@@ -38,12 +38,8 @@
       "description": "Authentication and authorisation"
     },
     {
-      "name": "user",
-      "description": "Operations for managing users"
-    },
-    {
-      "name": "subscriptions",
-      "description": "Operations specific to teachers for managing subscriptions"
+      "name": "rating",
+      "description": "Operations related to creating, updating and retrieving repository ratings"
     }
   ],
   "paths": {
@@ -84,7 +80,7 @@
         "description": "Refresh token",
         "responses": {
           "204": {
-            "$ref": "#/components/responses/NoContent"
+            "$ref": "#/components/responses/CreatedNoContent"
           },
           "400": {
             "$ref": "#/components/responses/Error"
@@ -92,26 +88,59 @@
         }
       }
     },
-    "/users": {
-      "get": {
-        "operationId": "readUsers",
-        "summary": "Returns a list of users.",
-        "description": "Optional extended description in CommonMark or HTML.",
+    "/organisations/{organisation}/{repository}": {
+      "post": {
+        "tags": [
+          "rating"
+        ],
+        "operationId": "createRepositoryRating",
+        "summary": "Create a new repository rating record",
+        "description": "Creates a new repository rating record ready attributed to the provided user Id. If the user has an existing record for this repository then the operation is converted to an update effectively changing their previous values to the provided values.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organisation",
+            "description": "The GitHub organisation name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/organisationName"
+            }
+          },
+          {
+            "in": "path",
+            "name": "repository",
+            "description": "The GitHub repository name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/repositoryName"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/organisationsOrganisationRepositoryPost"
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
-            "$ref": "#/components/responses/NoContent"
+            "$ref": "#/components/responses/CreatedNoContent"
           },
           "400": {
             "$ref": "#/components/responses/Error"
           }
         }
-      }
-    },
-    "/{organisation}/{repository}": {
+      },
       "get": {
-        "operationId": "readRepository",
-        "summary": "Reads the repository",
-        "description": "Reads the repository (description)\n",
+        "tags": [
+          "rating"
+        ],
+        "operationId": "readRepositoryRating",
+        "summary": "Read all repository ratings",
+        "description": "Returns an array of all UGC ratings for this repository\n",
         "parameters": [
           {
             "in": "path",
@@ -134,14 +163,13 @@
         ],
         "responses": {
           "200": {
-            "description": "success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "$ref": "#/components/responses/readRepositoryRating"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -156,6 +184,11 @@
       }
     },
     "schemas": {
+      "gitHubAccessToken": {
+        "description": "A token returned from a successful GitHub oAuth2 Authorisation Code Grant flow",
+        "type": "string",
+        "example": "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"
+      },
       "tokensPostRequest": {
         "type": "object",
         "properties": {
@@ -165,29 +198,63 @@
         },
         "additionalProperties": false
       },
-      "gitHubAccessToken": {
-        "description": "A token returned from a successful GitHub oAuth2 Authorisation Code Grant flow",
-        "type": "string",
-        "example": "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"
-      },
       "jwt": {
         "description": "JSON Web Token",
         "type": "object"
-      },
-      "organisationName": {
-        "description": "The name of the GitHub organisation",
-        "type": "string",
-        "example": "tforster"
       },
       "refreshToken": {
         "description": "A token that can be exchanged for a JWT without logging in a again",
         "type": "string",
         "example": "tbd"
       },
+      "organisationName": {
+        "description": "The name of the GitHub organisation",
+        "type": "string",
+        "example": "tforster"
+      },
       "repositoryName": {
         "description": "The name of the GitHub repository",
         "type": "string",
         "example": "joy"
+      },
+      "aggregateName": {
+        "type": "string",
+        "description": "The name of the aggregate value",
+        "example": "Median"
+      },
+      "aggregateDescription": {
+        "type": "string",
+        "description": "The description of the aggregate value",
+        "example": "The median is defined as the number in the middle of a given set of numbers arranged in order of increasing magnitude."
+      },
+      "aggregateValue": {
+        "type": "number",
+        "description": "The aggregate value",
+        "example": 2.3
+      },
+      "aggregateObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/aggregateName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/aggregateDescription"
+          },
+          "value": {
+            "$ref": "#/components/schemas/aggregateValue"
+          }
+        },
+        "additionalProperties": false
+      },
+      "organisationsOrganisationRepositoryPost": {
+        "type": "object",
+        "properties": {
+          "p": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       }
     },
     "responses": {
@@ -210,15 +277,6 @@
           }
         }
       },
-      "Created": {
-        "description": "Createdx"
-      },
-      "NoContent": {
-        "description": "No content"
-      },
-      "UnauthorizedError": {
-        "description": "Access token is missing or invalid"
-      },
       "Error": {
         "description": "Error",
         "content": {
@@ -238,11 +296,60 @@
           }
         }
       },
-      "NotFoundError": {
-        "description": "Resource was not found"
+      "CreatedNoContent": {
+        "description": "Created. No content."
       },
-      "DuplicateError": {
-        "description": "Resource already exists"
+      "readRepositoryRating": {
+        "description": "Success. Ratings returned.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "organisationName": {
+                  "$ref": "#/components/schemas/organisationName"
+                },
+                "repositoryName": {
+                  "$ref": "#/components/schemas/repositoryName"
+                },
+                "aggregates": {
+                  "$ref": "#/components/schemas/aggregateObject"
+                },
+                "ratings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/organisationName"
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "resourceNotFound": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
       }
     }
   }

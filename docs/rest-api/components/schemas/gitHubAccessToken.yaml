@@ -1,0 +1,3 @@
+description: A token returned from a successful GitHub oAuth2 Authorisation Code Grant flow
+type: string
+example: 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

@@ -1,0 +1,60 @@
+post:
+  tags:
+    - rating
+  operationId: createRepositoryRating
+  summary: Create a new repository rating record
+  description: >
+    Creates a new repository rating record ready attributed to the provided user
+    Id. If the user has an existing record for this repository then the
+    operation is converted to an update effectively changing their previous
+    values to the provided values.
+  parameters:
+    - in: path
+      name: organisation
+      description: The GitHub organisation name
+      required: true
+      schema:
+        $ref: ../components/schemas/organisationName.yaml
+    - in: path
+      name: repository
+      description: The GitHub repository name
+      required: true
+      schema:
+        $ref: ../components/schemas/repositoryName.yaml
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/organisationsOrganisationRepositoryPost.yaml
+  responses:
+    '204':
+      $ref: ../components/responses/CreatedNoContent.yaml
+    '400':
+      $ref: ../components/responses/Error.yaml
+get:
+  tags:
+    - rating
+  operationId: readRepositoryRating
+  summary: Read all repository ratings
+  description: |
+    Returns an array of all UGC ratings for this repository
+  parameters:
+    - in: path
+      name: organisation
+      description: The GitHub organisation name
+      required: true
+      schema:
+        $ref: ../components/schemas/organisationName.yaml
+    - in: path
+      name: repository
+      description: The GitHub repository name
+      required: true
+      schema:
+        $ref: ../components/schemas/repositoryName.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/readRepositoryRating.yaml
+    '400':
+      $ref: ../components/responses/Error.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml

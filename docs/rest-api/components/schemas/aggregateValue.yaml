@@ -1,0 +1,3 @@
+type: number
+description: The aggregate value
+example: 2.3

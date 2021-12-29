@@ -5,9 +5,11 @@ _A constantly evolving guide to developing api.gratr.dev. It captures the curren
 ## Table of Contents <!-- omit in toc -->
 
 - [About](#about)
+  - [Approach](#approach)
 - [Authy Stuff](#authy-stuff)
   - [Authentication with GitHub oAuth2 Authorisation Code Grant](#authentication-with-github-oauth2-authorisation-code-grant)
   - [Refresh Token Flow](#refresh-token-flow)
+- [API Stuff](#api-stuff)
 - [Database Stuff](#database-stuff)
 - [Web Client](#web-client)
   - [Templates](#templates)
@@ -18,11 +20,29 @@ Instead of capturing the technical architecture to an ADO wiki page as I have do
 
 Please note that this project is implemented across three repositories, one each for the web client, API and the browser extension. However, to maintain a holistic "developer" view of the architecture there will just this one Developer Guide, maintained in the API repo. The other two repos will point to here.
 
+### Approach
+
+- Lean tooling
+- Lean coding
+
+Pros:
+
+- Less time spent f**king around with giant convoluted toolsets and massive libraries created to [battle poor social network architecture](https://blog.risingstack.com/the-history-of-react-js-on-a-timeline/#:~:text=Back%20in%202011,of%20React.js.)
+- Quicker time to market
+- Faster page loads
+- Lower page weights
+- 100% Lighthouse scores for performance, a11y, seo and best practices
+- Exceptionally low running costs
+- Easier debugging
+- Greater enjoyment of the process
+- More time to focus on the fun aspect of creative problem solving
+
 ## Authy Stuff
 
 - Exchange GitHub userId for JWT
 - Verify GitHub userId when exchanging
 - Return JWT and refresh tokens
+- Compare state value in and out for security
 - I considered Azure [Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/overview) which is Azure's answer to [AWS Cognito](https://aws.amazon.com/cognito/) and while it looks compelling, and the docs and code samples are awesome, it is more than I need.
 
 ### Authentication with GitHub oAuth2 Authorisation Code Grant
@@ -61,6 +81,32 @@ sequenceDiagram
 ### Refresh Token Flow
 
 Pending...
+
+## API Stuff
+
+While there are many API types I find that most web applications work well with one or more of the following:
+
+- **REST**: Perfect for transactional interfaces requiring CRUD operations on distinct resources.
+- **GraphQL**: The ability to infinitely shape the data from a GraphQL API makes it perfect for marrying data from a content management application (CMA) with templates to generate output served by the content delivery application (CDA).
+- **Asynchronous**: Asynchronous APIs using WebSockets and SSE are perfect for low-latency situations with continuous flows of data such as chat apps.
+
+GRatr currently implements just a REST API which is defined and documented using the [Open API Specification 3.1.0](https://www.openapis.org/) (OAS) and can be found in [docs/rest-api](rest-api/openapi.yaml).
+
+The API repository has a dev dependency on [Redocly's](https://redoc.ly/) [OpenAPI CLI toolset](https://github.com/Redocly/openapi-cli). This CLI tool makes it easy to split long OAS yaml defintion files into smaller and far more manageable components. These individual files can be later bundled back into a single JSON file for consumption by our in-API validator, [Z-Schema](https://github.com/zaggino/z-schema). They can also be linted to catch errors early.
+
+Package.json contains an NPM script that will simultaneously lint and bundle the latest changes into `src/rest.json`.
+
+```shell
+npm run bundleSchemas
+```
+
+A second package.json script will open the Redocly reader locally with `docs/rest-api/openapi.yaml` loaded.
+
+```shell
+npm run showDocs
+```
+
+_Note: While there are several VSCode extensions offering OAS validation and inline previewing, most do not support OAS 3.1.0 (yet). For this reason I have evolved my workflow so that I edit in VSCode and lint/preview from the command-line._
 
 ## Database Stuff
 

@@ -1,0 +1,3 @@
+description: A token that can be exchanged for a JWT without logging in a again
+type: string
+example: tbd

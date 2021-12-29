@@ -1,0 +1,9 @@
+type: object
+properties:
+  name:
+    $ref: ./aggregateName.yaml
+  description:
+    $ref: ./aggregateDescription.yaml
+  value:
+    $ref: ./aggregateValue.yaml
+additionalProperties: false

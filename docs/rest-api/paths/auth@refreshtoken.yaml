@@ -1,0 +1,11 @@
+post:
+  tags:
+    - auth
+  operationId: refreshtoken
+  summary: Refresh token
+  description: Refresh token
+  responses:
+    '204':
+      $ref: ../components/responses/CreatedNoContent.yaml
+    '400':
+      $ref: ../components/responses/Error.yaml

@@ -17,7 +17,6 @@ The versions listed for these prerequisites are current at the time of writing. 
 - A good code editor such as [VSCode](https://code.visualstudio.com/download)
 - [Git 2.34.1](https://git-scm.com/downloads)
 - [Node.js v17.3.0 with NPM 8.3.0](https://nodejs.org/en/download/)
-- [yq v4.16.2](https://github.com/mikefarah/yq)
 
 ## Setup and Configuration
 
