@@ -1,0 +1,4 @@
+type: string
+format: date-time
+description: The date the record was created
+example: 2021-12-29T23:38:24.714Z

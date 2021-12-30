@@ -7,7 +7,7 @@
     },
     {
       "description": "Sandbox",
-      "url": "https://api.sand.gratr.dev"
+      "url": "https://api.sand.gratr.devy"
     },
     {
       "description": "Staging",
@@ -247,11 +247,64 @@
         },
         "additionalProperties": false
       },
+      "ratingDescription": {
+        "type": "string",
+        "description": "The description of a rating",
+        "example": "Is the documentation comprehensive? Is it accurate? Does search work or do you have to use Google to search these docs? Can you control how links open (e.g. in same tab or new tab)."
+      },
+      "username": {
+        "type": "string",
+        "description": "The GitHub username",
+        "example": "tforster"
+      },
+      "avatar": {
+        "type": "string",
+        "format": "uri",
+        "description": "The URL to the GitHub users avatar",
+        "example": "https://avatars.githubusercontent.com/u/121533?v=4"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "The date the record was created",
+        "example": "2021-12-29T23:38:24.714Z"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "The date the record was last updated",
+        "example": "2021-12-29T23:38:24.714Z"
+      },
+      "ratingValue": {
+        "type": "number",
+        "description": "The value of a rating object",
+        "example": 2.3
+      },
+      "ratingComment": {
+        "type": "string",
+        "description": "The optional comment associated with a UGC rating",
+        "example": "GRatr is *awesome*\\n\\nAnd supports MarkDown too!"
+      },
       "organisationsOrganisationRepositoryPost": {
         "type": "object",
         "properties": {
-          "p": {
-            "type": "string"
+          "documentation": {
+            "$ref": "#/components/schemas/ratingValue"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/ratingValue"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/ratingValue"
+          },
+          "cost": {
+            "$ref": "#/components/schemas/ratingValue"
+          },
+          "learning": {
+            "$ref": "#/components/schemas/ratingValue"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/ratingComment"
           }
         },
         "additionalProperties": false
@@ -313,20 +366,86 @@
                   "$ref": "#/components/schemas/repositoryName"
                 },
                 "aggregates": {
-                  "$ref": "#/components/schemas/aggregateObject"
+                  "type": "object",
+                  "description": "A hash of aggregated metrics such as mean, mode, etc.",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/aggregateObject"
+                  }
+                },
+                "descriptions": {
+                  "type": "object",
+                  "description": "A hash of descriptions for each of the ratings found in ratings.values below.",
+                  "properties": {
+                    "documentation": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    },
+                    "usage": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    },
+                    "quality": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    },
+                    "cost": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    },
+                    "learning": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    },
+                    "comment": {
+                      "$ref": "#/components/schemas/ratingDescription"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "nextPageToken": {
+                  "type": "string",
+                  "description": "Somewhat tbd but a placeholder for aiding pagination of larger datasets"
                 },
                 "ratings": {
                   "type": "array",
+                  "description": "An array of UGC ratings including user information and rating values.",
                   "items": {
                     "type": "object",
                     "properties": {
                       "username": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/username"
+                      },
+                      "avatar": {
+                        "$ref": "#/components/schemas/avatar"
+                      },
+                      "createdAt": {
+                        "$ref": "#/components/schemas/createdAt"
+                      },
+                      "updatedAt": {
+                        "$ref": "#/components/schemas/updatedAt"
+                      },
+                      "values": {
+                        "type": "object",
+                        "description": "Hash of each rating value by this user",
+                        "properties": {
+                          "documentation": {
+                            "$ref": "#/components/schemas/ratingValue"
+                          },
+                          "usage": {
+                            "$ref": "#/components/schemas/ratingValue"
+                          },
+                          "quality": {
+                            "$ref": "#/components/schemas/ratingValue"
+                          },
+                          "cost": {
+                            "$ref": "#/components/schemas/ratingValue"
+                          },
+                          "learning": {
+                            "$ref": "#/components/schemas/ratingValue"
+                          },
+                          "comment": {
+                            "$ref": "#/components/schemas/ratingComment"
+                          }
+                        },
+                        "additionalProperties": false
                       }
                     },
-                    "additionalProperties": {
-                      "$ref": "#/components/schemas/organisationName"
-                    }
+                    "additionalProperties": false
                   }
                 }
               },

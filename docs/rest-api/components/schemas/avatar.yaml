@@ -1,0 +1,4 @@
+type: string
+format: uri
+description: The URL to the GitHub users avatar
+example: https://avatars.githubusercontent.com/u/121533?v=4

@@ -1,6 +1,6 @@
 # Developer Guide <!-- omit in toc -->
 
-_A constantly evolving guide to developing api.gratr.dev. It captures the current state of the architecture, includes rationales and guiding principals._
+_A constantly evolving guide to developing GRatr. It captures the current state of the architecture, includes rationales and guiding principals._
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -16,7 +16,7 @@ _A constantly evolving guide to developing api.gratr.dev. It captures the curren
 
 ## About
 
-Instead of capturing the technical architecture to an ADO wiki page as I have done in the past I am trying something new by keeping all documentation closer to the code. This should be faster/easier to update since I have VSCode open all the time. Which in turn, should mean that I am more likely to capture valuable nuances which would otherwise be lost because I didn't want to waste the time context switching
+Instead of capturing the technical architecture to an ADO wiki page as I have done in the past I am trying something new by keeping all documentation closer to the code. This should be faster/easier to update since I have VSCode open all the time. Which in turn, should mean that I am more likely to capture valuable nuances which would otherwise be lost because I didn't want to waste the time context switching.
 
 Please note that this project is implemented across three repositories, one each for the web client, API and the browser extension. However, to maintain a holistic "developer" view of the architecture there will just this one Developer Guide, maintained in the API repo. The other two repos will point to here.
 
@@ -24,6 +24,8 @@ Please note that this project is implemented across three repositories, one each
 
 - Lean tooling
 - Lean coding
+- Lean libraries
+- No client-side JavaScript framework
 
 Pros:
 
@@ -123,7 +125,17 @@ calls to populate search results, and save user ratings and reviews.
 
 The API will also serve JSON data to planned browser extension that will inject GRatr ratings into GitHub and NPM pages.
 
-While JavaScript will be required for handling GitHub authentication and fetching search results, elsewhere its role will be for progressive enhancement. This, in concert with a no-dependency and no-framework approach will require a very small JS footprint. As such, the small single `main.js` file will be present on each page. There will be no need for page-specific JavaScript files since performance will be optimised when the tiny main.js is cached on the first page request.
+While JavaScript will be required for handling GitHub authentication and fetching search results, elsewhere its role will be for progressive enhancement. This, in concert with a lean-dependency and no-framework approach will require a very small JS footprint. As such, the small single `main.js` file will be present on each page. There will be no need for page-specific JavaScript files since performance will be optimised when the tiny main.js is cached on the first page request.
+
+General purpose libraries like jQuery, lodash, etc will always be avoided. There is nothing they do that cannot be accomplished with Vanilla JS. In fact, third party libraries should only ever be used when they provide significant domain-specific capabilities.
+
+The only two client-side libraries currently used are:
+
+- [marked](https://github.com/markedjs/marked): Allows the application to (de)serialise markdown to/from JSON so that it can safely traverse the API calls.
+  
+  I have considered writing a super-lightweight parser, essentially a glorified regex, to support just bold, italic and bullets. However, this still requires a lot of edge-case testing and limits the user in what they can enter for a comment. Marked is a zero-dependency library that has been battle-tested.  
+
+  _Note: Considering <https://www.npmjs.com/package/markdown-wasm> which is slightly smaller than marked and implemented in WASM._
 
 ### Templates
 

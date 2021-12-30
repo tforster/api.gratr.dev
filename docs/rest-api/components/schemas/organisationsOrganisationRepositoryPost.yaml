@@ -1,5 +1,15 @@
 type: object
 properties:
-  p:
-    type: string
+  documentation:
+    $ref: ../schemas/ratingValue.yaml
+  usage:
+    $ref: ../schemas/ratingValue.yaml
+  quality:
+    $ref: ../schemas/ratingValue.yaml
+  cost:
+    $ref: ../schemas/ratingValue.yaml
+  learning:
+    $ref: ../schemas/ratingValue.yaml
+  comment:
+    $ref: ../schemas/ratingComment.yaml
 additionalProperties: false

@@ -1,0 +1,9 @@
+type: object
+properties:
+  id:
+    $ref: ./ulid.yaml
+  name:
+    $ref: ./ratingName.yaml
+  value:
+    $ref: ./ratingValue.yaml
+additionalProperties: false

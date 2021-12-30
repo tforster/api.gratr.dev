@@ -1,0 +1,3 @@
+type: string
+description: The optional comment associated with a UGC rating
+example: GRatr is *awesome*\n\nAnd supports MarkDown too!

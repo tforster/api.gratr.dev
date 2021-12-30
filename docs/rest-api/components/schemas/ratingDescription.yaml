@@ -1,0 +1,3 @@
+type: string
+description: The description of a rating
+example: Is the documentation comprehensive? Is it accurate? Does search work or do you have to use Google to search these docs? Can you control how links open (e.g. in same tab or new tab).

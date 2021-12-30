@@ -1,6 +1,8 @@
 post:
   tags:
     - rating
+  security:
+    - GRatr: []
   operationId: createRepositoryRating
   summary: Create a new repository rating record
   description: >
@@ -27,9 +29,9 @@ post:
         schema:
           $ref: ../components/schemas/organisationsOrganisationRepositoryPost.yaml
   responses:
-    '204':
+    "204":
       $ref: ../components/responses/CreatedNoContent.yaml
-    '400':
+    "400":
       $ref: ../components/responses/Error.yaml
 get:
   tags:
@@ -52,9 +54,9 @@ get:
       schema:
         $ref: ../components/schemas/repositoryName.yaml
   responses:
-    '200':
+    "200":
       $ref: ../components/responses/readRepositoryRating.yaml
-    '400':
+    "400":
       $ref: ../components/responses/Error.yaml
-    '404':
+    "404":
       $ref: ../components/responses/NotFound.yaml

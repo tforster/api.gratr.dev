@@ -1,0 +1,4 @@
+type: string
+format: ulid
+description: A unique lexicographically sortable object identifier typically used for globally unique ids.
+example: 01F4AFQH62PVJFXXFA45W5BRN3

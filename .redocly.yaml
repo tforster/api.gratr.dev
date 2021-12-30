@@ -1,0 +1,11 @@
+lint:
+  extends:
+    - recommended
+  rules:
+    boolean-parameter-prefixes:
+      severity: error
+      prefixes: ["should", "is", "has"]
+    tags-alphabetical:
+      severity: warn
+    no-unused-components:
+      severity: warn
