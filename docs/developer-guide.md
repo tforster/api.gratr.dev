@@ -6,6 +6,7 @@ _A constantly evolving guide to developing GRatr. It captures the current state 
 
 - [About](#about)
   - [Approach](#approach)
+  - [Mermaid Diagrams](#mermaid-diagrams)
 - [Taxonomy](#taxonomy)
 - [Rendering Strategy for Performance and Efficiency](#rendering-strategy-for-performance-and-efficiency)
 - [Authy Stuff](#authy-stuff)
@@ -47,6 +48,13 @@ Pros:
 - Greater enjoyment of the process
 - More time to focus on the fun aspect of creative problem solving
 
+### Mermaid Diagrams
+
+This developer guide takes advantage of [Mermaid](https://mermaid-js.github.io/mermaid/#/) for rendering sequence diagrams. Unfortunatley GitHub does not yet support Mermaid itself. If you are reading this file on GitHub you may want to consider installing this [extension](
+https://chrome.google.com/webstore/detail/github-%2B-mermaid/goiiopgdnkogdbjmncgedmgpoajilohe/related?hl=en). There is also a long-running [feature request](https://github.community/t/feature-request-support-mermaid-markdown-graph-diagrams-in-md-files/1922) to add Mermaid support to GitHub. As of this writing it has 548 likes and more than 250 comments. Please consider adding your support to it.
+
+VSCode users, there is a [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension available that will automatically render Mermaid diagrams in preview mode.
+
 ## Taxonomy
 
 - **project**: A project refers to a GitHub repository and is shorthhand for the unique organisation/repository path. GitHub projects can be mapped onto GRatr projects by simply changing the domain part of the URL. E.g. The project found at <https://github.com/tforster/joy> can also be found in GRatr at <https://gratr.dev/tforster/joy>.
@@ -72,7 +80,7 @@ The best strategy is one that leverages on-demand creation (and updating) of the
 
 I do anticipate that a tiny subset of the 200,000,000 repositories might be so popular that the same page is regenerated frequently. If this becomes a performance or cost issue (e.g. too many CDN invalidations) then the approach will be to queue changes into batches. This means that user submitted ratings become eventually consistent but the volume of pre-existing ratings should keep minimise the standard deviation.
 
-:::mermaid
+```mermaid
 sequenceDiagram
   participant A as Alice
   participant G as GRatr
@@ -89,7 +97,7 @@ sequenceDiagram
 
   A->>G: Alice rates the project
   G->>G: Serverless function (re)generates static page
-  :::
+  ```
 
 ## Authy Stuff
 
@@ -203,7 +211,7 @@ Saving this information in the GRatr database and/or static page will yield fast
 
 Since GitHub allows its API to be queried anonymously for public repositories the GRatr project page will implement the following sequence flow.
 
-:::mermaid
+```mermaid
 sequenceDiagram
 
   participant A as Alice
@@ -224,7 +232,7 @@ sequenceDiagram
     H->>I: GitHub returns legitimate data
     I->>I: API regenerates page
   end
-:::
+```
 
 This flow has numerous advantages:
 
