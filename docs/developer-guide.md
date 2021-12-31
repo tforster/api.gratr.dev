@@ -6,13 +6,21 @@ _A constantly evolving guide to developing GRatr. It captures the current state 
 
 - [About](#about)
   - [Approach](#approach)
+- [Taxonomy](#taxonomy)
+- [Rendering Strategy for Performance and Efficiency](#rendering-strategy-for-performance-and-efficiency)
 - [Authy Stuff](#authy-stuff)
   - [Authentication with GitHub oAuth2 Authorisation Code Grant](#authentication-with-github-oauth2-authorisation-code-grant)
   - [Refresh Token Flow](#refresh-token-flow)
 - [API Stuff](#api-stuff)
 - [Database Stuff](#database-stuff)
 - [Web Client](#web-client)
+  - [Including Potentially Changing GitHub Content](#including-potentially-changing-github-content)
   - [Templates](#templates)
+    - [Index](#index)
+    - [Legal](#legal)
+    - [Search results](#search-results)
+    - [Project](#project)
+- [Browser Extension](#browser-extension)
 
 ## About
 
@@ -38,6 +46,50 @@ Pros:
 - Easier debugging
 - Greater enjoyment of the process
 - More time to focus on the fun aspect of creative problem solving
+
+## Taxonomy
+
+- **project**: A project refers to a GitHub repository and is shorthhand for the unique organisation/repository path. GitHub projects can be mapped onto GRatr projects by simply changing the domain part of the URL. E.g. The project found at <https://github.com/tforster/joy> can also be found in GRatr at <https://gratr.dev/tforster/joy>.
+  
+## Rendering Strategy for Performance and Efficiency
+
+One of the goals of GRatr is use static pages to present individual organisation/repository results.
+
+- Static pages will be incredibly fast to load
+- The read/write ratio is heavily skewed towards reading and caching with a CDN is far more efficient than caching with a database
+
+However, this presents some interesting challenges since GitHub has ~200,000,000 repositories.
+
+It does not make sense to crawl every GitHub repository and create a matching  GRatr ratings page because:
+
+- Requires significant resources making it cost prohibitive
+- Requires building and deploying a crawler that constantly checks for new repositories
+- ALL GRatr pages will be empty on launch day
+- Most will remain empty until GRatr gets significant traction
+- Even when GRatr is wildly successful there will still be many repositories that will never be rated, leaving them empty on GRatr
+  
+The best strategy is one that leverages on-demand creation (and updating) of the static pages. When GRatr launches it will effectively have no results pages (some final test pages notwithstanding). Pages will be created to Azure blob storage using a serverless function when a user saves the first ratings for a specific project. The same serverless function will replace the static page with a new one after each subsequent user adds their own ratings.
+
+I do anticipate that a tiny subset of the 200,000,000 repositories might be so popular that the same page is regenerated frequently. If this becomes a performance or cost issue (e.g. too many CDN invalidations) then the approach will be to queue changes into batches. This means that user submitted ratings become eventually consistent but the volume of pre-existing ratings should keep minimise the standard deviation.
+
+:::mermaid
+sequenceDiagram
+  participant A as Alice
+  participant G as GRatr
+  participant H as GitHub
+
+  A->>G: Enters criteria into search page
+  G->>H: Queries GitHub
+  H->>G: Returns a matching repository path org/rep
+  G->>G: Redirects to gratr/org/rep static page
+
+  alt gratr/o/r does not exist
+    G->>G: 404 handler shows new project page
+  end
+
+  A->>G: Alice rates the project
+  G->>G: Serverless function (re)generates static page
+  :::
 
 ## Authy Stuff
 
@@ -137,16 +189,91 @@ The only two client-side libraries currently used are:
 
   _Note: Considering <https://www.npmjs.com/package/markdown-wasm> which is slightly smaller than marked and implemented in WASM._
 
+### Including Potentially Changing GitHub Content
+
+GRatr is not intended to be a GitHub alternative but it does need to show some of the repository information in its own UI. Information including:
+
+- Organisation name
+- Repository name
+- Avatar
+- Description
+- README (if one exists)
+
+Saving this information in the GRatr database and/or static page will yield fast performance. However, this approach must be combined with a strategy that checks for changes at source so that GRatr can be updated.
+
+Since GitHub allows its API to be queried anonymously for public repositories the GRatr project page will implement the following sequence flow.
+
+:::mermaid
+sequenceDiagram
+
+  participant A as Alice
+  participant G as GRatr App
+  participant H as GitHub
+  participant I as GRatr API
+
+  A->>G: Alice requests project org/repo
+  G->>A: GRatr renders project org/repo
+  G->>H: Page queries GitHub org/repo avatar, description, README
+  H->>G: GitHub returns the data
+  G->>G: Page compares GitHub to cached
+
+  alt If any differ
+    G->>G: Page updates to GitHub
+    G->>I: Page notifies API that something has changed
+    I->>H: API queries GitHub (we don't trust Alice)
+    H->>I: GitHub returns legitimate data
+    I->>I: API regenerates page
+  end
+:::
+
+This flow has numerous advantages:
+
+- GRatr continues to leverage highly performant static pages for all project results  
+- The user sees content immediately
+- Content that is newer on GitHub is progressively revealed in the UI, typically within a few hundred milliseconds
+- GRatr leverages the users network to check for changes saving a significant number of outbound HTTP requests over time
+  
+The implementation of this flow does not require any GRatr user identity since it will only retrieve GitHub specific information. When it regenerates the static page it does not alter any of the existing ratings or reviews. As such it will be implemented as a simple PUT on the `/{organisation}/{repository}` endpoint.
+
+_Note: To prevent abuse where a malicious actor could simply script infinite PUT requests a TTL will be added to the database schema. Any PUT request received within the TTL will be ignored._
+
 ### Templates
 
-- Home
+The web client uses [WebProducer](https://github.com/tforster/webproducer) to generate static pages from data and [Handlebars](https://handlebarsjs.com/) templates. Handlebars has been around for a long time but it is still one of the leanest and fastest templating engines available. Unlike JSX Handlebars uses HTML making it much easier to visualise the page in the minds DOM.
+
+The following four templates will suffice to implement all GRatr content:
+
+#### Index
+
+- Implements the home/landing/marketing page with embedded leaderboard.
+- Rendered at build-time
   - /
-- Legal (about, privacy, terms of service)
+
+#### Legal
+
+- Simple template consisting of one column, a title and a body.
+- Used to render mostly-text pages
+- Rendered at build-time
   - /about
   - /privacy
   - /terms-of-service
-- Search results
+
+#### Search results
+
+- Implements the search results listing
+- Rendered at build-time with results fetched on demand and injected using HTML &lt;template&gt; element.
   - /results
-- Project
-  - /{organisation}/{repository} (statically generated)
-  - /organisation/repository (new repo template)
+  
+#### Project
+
+- Implements the new repo page
+  - Rendered at build-time
+  -
+  - /organisation/repository
+- Implements individual project pages
+  - (re)Rendered in a serverless function
+  - /{organisation}/{repository} e.g. `/tforster/joy`, `google/log4jscanner`, etc.
+
+## Browser Extension
+
+A browser extension is planned that will target [GitHub](https://github.com) and [NPM search pages](https://www.npmjs.com/) (with appropriate permission granted by the browser owner of course). It will inject the aggregate results for currently displayed repo as a small UI element. This will make it easier for developers to see GRatr scores without having to open up www.gratr.dev directly. The UI element will be clickable to take the developer directly to the GRatr page if they want to see more detail, or add their own ratings.

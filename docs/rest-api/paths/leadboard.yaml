@@ -1,0 +1,11 @@
+get:
+  tags:
+    - leaderboard
+  operationId: readLeaderboard
+  summary: Reads the leaderboard
+  description: Reads the leaderboard
+  responses:
+    "200":
+      $ref: ../components/responses/Leaderboard.yaml
+    "400":
+      $ref: ../components/responses/Error.yaml

@@ -60,3 +60,17 @@ get:
       $ref: ../components/responses/Error.yaml
     "404":
       $ref: ../components/responses/NotFound.yaml
+put:
+  tags:
+    - rating
+  operationId: updateRepositoryRating
+  summary: Updates the repository rating
+  description: |
+    Updates the persisted data with the latest GitHub properties
+  responses:
+    "200":
+      $ref: ../components/responses/readRepositoryRating.yaml
+    "400":
+      $ref: ../components/responses/Error.yaml
+    "404":
+      $ref: ../components/responses/NotFound.yaml

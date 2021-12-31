@@ -31,6 +31,8 @@ paths:
     $ref: paths/auth@tokens.yaml
   /auth/refreshtoken:
     $ref: paths/auth@refreshtoken.yaml
+  /leaderboard:
+    $ref: paths/leadboard.yaml
   /organisations/{organisation}/{repository}:
     $ref: paths/organisations@{organisation}@{repository}.yaml
 components:
