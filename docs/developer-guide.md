@@ -50,8 +50,10 @@ Pros:
 
 ### Mermaid Diagrams
 
-This developer guide takes advantage of [Mermaid](https://mermaid-js.github.io/mermaid/#/) for rendering sequence diagrams. Unfortunatley GitHub does not yet support Mermaid itself. If you are reading this file on GitHub you may want to consider installing this [extension](
-https://chrome.google.com/webstore/detail/github-%2B-mermaid/goiiopgdnkogdbjmncgedmgpoajilohe/related?hl=en). There is also a long-running [feature request](https://github.community/t/feature-request-support-mermaid-markdown-graph-diagrams-in-md-files/1922) to add Mermaid support to GitHub. As of this writing it has 548 likes and more than 250 comments. Please consider adding your support to it.
+This developer guide takes advantage of [Mermaid](https://mermaid-js.github.io/mermaid/#/) for rendering sequence diagrams. Unfortunately, GitHub does not yet support Mermaid. If you are reading this file on GitHub you may like this [extension](
+https://chrome.google.com/webstore/detail/github-%2B-mermaid/goiiopgdnkogdbjmncgedmgpoajilohe/related?hl=en) that polyfills the missing feature.
+
+There is a long-running [feature request](https://github.community/t/feature-request-support-mermaid-markdown-graph-diagrams-in-md-files/1922) to add Mermaid support to GitHub. As of this writing it has 548 likes and more than 250 comments. Please consider adding your support behind it.
 
 VSCode users, there is a [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension available that will automatically render Mermaid diagrams in preview mode.
 
@@ -64,7 +66,7 @@ VSCode users, there is a [Markdown Preview Mermaid Support](https://marketplace.
 One of the goals of GRatr is use static pages to present individual organisation/repository results.
 
 - Static pages will be incredibly fast to load
-- The read/write ratio is heavily skewed towards reading and caching with a CDN is far more efficient than caching with a database
+- The read/write ratio is heavily skewed towards reading and caching with a CDN is far more efficient than caching with a database, rebuilding the page server side on each request and streaming it to the requestor.
 
 However, this presents some interesting challenges since GitHub has ~200,000,000 repositories.
 
@@ -168,7 +170,7 @@ A second package.json script will open the Redocly reader locally with `docs/res
 npm run showDocs
 ```
 
-_Note: While there are several VSCode extensions offering OAS validation and inline previewing, most do not support OAS 3.1.0 (yet). For this reason I have evolved my workflow so that I edit in VSCode and lint/preview from the command-line._
+_Note: While there are several VSCode xtensions offering OAS validation and inline previewing, most do not support OAS 3.1.0 (yet). For this reason I have evolved my workflow so that I edit in VSCode and lint/preview from the command-line._
 
 ## Database Stuff
 
@@ -247,13 +249,13 @@ _Note: To prevent abuse where a malicious actor could simply script infinite PUT
 
 ### Templates
 
-The web client uses [WebProducer](https://github.com/tforster/webproducer) to generate static pages from data and [Handlebars](https://handlebarsjs.com/) templates. Handlebars has been around for a long time but it is still one of the leanest and fastest templating engines available. Unlike JSX Handlebars uses HTML making it much easier to visualise the page in the minds DOM.
+The web client uses [WebProducer](https://github.com/tforster/webproducer) to generate static pages from data and [Handlebars](https://handlebarsjs.com/) templates. Handlebars has been around for a long time but it is still one of the leanest and fastest templating engines available. Unlike JSX, Handlebars uses HTML making it much easier to visualise the page in the minds DOM.
 
 The following four templates will suffice to implement all GRatr content:
 
 #### Index
 
-- Implements the home/landing/marketing page with embedded leaderboard.
+- Implements the home page with embedded leaderboard and marketing content.
 - Rendered at build-time
   - /
 
@@ -276,7 +278,6 @@ The following four templates will suffice to implement all GRatr content:
 
 - Implements the new repo page
   - Rendered at build-time
-  -
   - /organisation/repository
 - Implements individual project pages
   - (re)Rendered in a serverless function
